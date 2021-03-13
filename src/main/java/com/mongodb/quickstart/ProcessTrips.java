@@ -23,14 +23,9 @@ import java.util.function.Consumer;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-public class MappingTripsPOJO {
+public class ProcessTrips {
     static String uriString = "mongodb+srv://agarcia:Apq1adma64@cluster0.shrrf.mongodb.net/sample_training?retryWrites=true&w=majority";
-
-   
     public static void main(String[] args) {
-        trip atrip=new trip();
-        List<Double> pos;
-        Double xpos,ypos;
         ConnectionString connectionString = new ConnectionString(uriString);
         CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
         CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
@@ -40,19 +35,16 @@ public class MappingTripsPOJO {
                                                                 .build();
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sample_training");
-            MongoCollection<trip> tripsCollection = db.getCollection("trips", trip.class);
+           
 
-            MongoCursor<trip> cursor;
-            FindIterable<trip> iterable = tripsCollection.find(gte("tripduration", 331));
+            MongoCollection<Document> tripsCollection =db.getCollection("trips");
+            MongoCursor<Document> cursor;
+            FindIterable<Document> iterable = tripsCollection.find(gte("tripduration", 331));
             cursor=iterable.iterator();
-       
-
+            
            
             while (cursor.hasNext()) {
-
-          
-                
-              System.out.println(cursor.next().toString());
+                System.out.println(cursor.next().toJson());
             }
          
             
